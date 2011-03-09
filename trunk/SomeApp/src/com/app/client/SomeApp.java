@@ -39,6 +39,7 @@ public class SomeApp implements EntryPoint {
         verticalPanel.add(fillerCaptionGridOther);
         
         HorizontalPanel horizontalPanel = new HorizontalPanel();
+        
         verticalPanel.add(horizontalPanel);
         
         Button addUserButton = new Button("New button");
