@@ -1,5 +1,6 @@
 package com.app.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.app.shared.UserBean;
@@ -7,6 +8,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -25,8 +28,8 @@ public class SearchUser implements EntryPoint {
     public void onModuleLoad() {
         final VerticalPanel mainPanel = new VerticalPanel();
         
-        Grid formGrid = new Grid(10,2);
-
+        final Grid formGrid = new Grid(10, 2);
+        
         final TextBox searchValue = new TextBox();
         Label searchTypeLabel = new Label("Select the search type");
         formGrid.setWidget(7, 0, searchTypeLabel);
@@ -41,12 +44,13 @@ public class SearchUser implements EntryPoint {
         Label searchInputLabel = new Label("Enter the value");
         formGrid.setWidget(8, 0, searchInputLabel);
         formGrid.setWidget(8, 1, searchValue);
-
         
         mainPanel.add(formGrid);
         
-        Button searchUser = new Button("New Button");
+        final Button searchUser = new Button("New Button");
         searchUser.setText("Search user");
+        
+        final Button homeButton = new Button("New Button");
         
         ClickHandler searchHandler = new ClickHandler() {
             
@@ -58,27 +62,81 @@ public class SearchUser implements EntryPoint {
                     public void onFailure(Throwable caught) {
                         Window.alert("Error message :: " + caught.getMessage());
                     }
-
+                    
                     @Override
                     public void onSuccess(List<UserBean> result) {
-                       for (UserBean userBean : result) {   
-                       Grid resultGrid = new Grid(8,2);
-                       Label resUserNameLabel = new Label("User Name");
-                       resultGrid.setWidget(1, 0, resUserNameLabel);
-                       Label resUserNameValue = new Label(userBean.getUserName());
-                       resultGrid.setWidget(1, 1, resUserNameValue);                    
-                       mainPanel.add(resultGrid);
-                       }
+                        
+                        CellTable<UserBean> table = new CellTable<UserBean>();
+                        formGrid.setVisible(false);
+                        searchUser.setVisible(false);
+                        homeButton.setVisible(false);
+                        TextColumn<UserBean> nameColumn = new TextColumn<UserBean>() {
+                            @Override
+                            public String getValue(UserBean user) {
+                                return user.getUserName();
+                            }
+                        };
+                        
+                        TextColumn<UserBean> idColumn = new TextColumn<UserBean>() {
+                            @Override
+                            public String getValue(UserBean user) {
+                                return Long.toString(user.getUserId());
+                            }
+                        };
+                        
+                        TextColumn<UserBean> userTypeColumn = new TextColumn<UserBean>() {
+                            @Override
+                            public String getValue(UserBean user) {
+                                return user.getUserType();
+                            }
+                        };
+                        
+                        TextColumn<UserBean> emailColumn = new TextColumn<UserBean>() {
+                            @Override
+                            public String getValue(UserBean user) {
+                                return user.getEmail();
+                            }
+                        };
+                        
+                        table.addColumn(idColumn, "User Id");
+                        table.addColumn(nameColumn, "Name");
+                        table.addColumn(userTypeColumn, "User type");
+                        table.addColumn(emailColumn, "Email Id");
+                        table.setRowCount(result.size(), true);
+                        table.setRowData(0, result);
+                        mainPanel.add(table);
+                        
+                        
+                        
+                        final Button homeButtonNew = new Button("New Button");
+                        homeButtonNew.setText("Home");
+                        
+                        ClickHandler homeNewHandler = new ClickHandler() {
+                            
+                            @Override
+                            public void onClick(ClickEvent event) {
+                                Window.Location.assign("SomeApp.html");
+                            }
+                        };
+                        ;
+                        ;
+                        homeButtonNew.addClickHandler(homeNewHandler);
+                        mainPanel.add(homeButtonNew);
                     }
-                };;;
-                searchUserService.searchUser(searchType.getValue(searchType.getSelectedIndex()), searchValue.getValue(), callback);
+                };
+                ;
+                ;
+                searchUserService.searchUser(searchType.getValue(searchType.getSelectedIndex()),
+                        searchValue.getValue(), callback);
             }
-        };;;
+        };
+        ;
+        ;
         searchUser.addClickHandler(searchHandler);
         
         mainPanel.add(searchUser);
         
-        Button homeButton = new Button("New Button"); 
+        
         homeButton.setText("Home");
         
         ClickHandler homeHandler = new ClickHandler() {
@@ -87,12 +145,13 @@ public class SearchUser implements EntryPoint {
             public void onClick(ClickEvent event) {
                 Window.Location.assign("SomeApp.html");
             }
-        };;;
+        };
+        ;
+        ;
         homeButton.addClickHandler(homeHandler);
         
         mainPanel.add(homeButton);
         
-        
         RootPanel.get("content-search-user-page").add(mainPanel);
-    }   
+    }
 }
