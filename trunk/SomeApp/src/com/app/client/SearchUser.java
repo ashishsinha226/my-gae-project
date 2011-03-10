@@ -1,6 +1,8 @@
 package com.app.client;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.app.shared.UserBean;
@@ -66,10 +68,13 @@ public class SearchUser implements EntryPoint {
                     @Override
                     public void onSuccess(List<UserBean> result) {
                         
+                        Collections.sort(result, new NameComparator());
                         CellTable<UserBean> table = new CellTable<UserBean>();
                         formGrid.setVisible(false);
                         searchUser.setVisible(false);
                         homeButton.setVisible(false);
+                        
+                        
                         TextColumn<UserBean> nameColumn = new TextColumn<UserBean>() {
                             @Override
                             public String getValue(UserBean user) {
@@ -153,5 +158,21 @@ public class SearchUser implements EntryPoint {
         mainPanel.add(homeButton);
         
         RootPanel.get("content-search-user-page").add(mainPanel);
+    }
+    
+    class NameComparator implements Comparator{
+        
+        public int compare(Object emp1, Object emp2){    
+     
+            //parameter are of type Object, so we have to downcast it to Employee objects
+           
+            String emp1Name = ((UserBean)emp1).getUserName();        
+            String emp2Name = ((UserBean)emp2).getUserName();
+           
+            //uses compareTo method of String class to compare names of the employee
+            return emp1Name.compareTo(emp2Name);
+       
+        }
+     
     }
 }
